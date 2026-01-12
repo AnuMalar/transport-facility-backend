@@ -78,8 +78,9 @@ exports.checkRideExists = async (req, res) => {
 exports.searchRides = async (req, res) => {
     try {
         const { time, vehicleType, empId } = req.body;
+        const { currentTime } = req.query;
         // if (!!time) {
-        const selectedMinutes = timeToMinutes(time);
+        const selectedMinutes = timeToMinutes(time ? time : currentTime);
         const minTime = Math.max(0, selectedMinutes - 60);
         const maxTime = Math.min(1440, selectedMinutes + 60);
         // }
@@ -91,7 +92,7 @@ exports.searchRides = async (req, res) => {
                 // employeeId: { $ne: empId }
             }
         ).sort({ time: -1 });
-        if (!!time) {
+        if (!!time || !!currentTime) {
             data = data.filter(ride => {
                 const rideMinutes = timeToMinutes(ride.time);
                 return rideMinutes >= minTime && rideMinutes <= maxTime;
